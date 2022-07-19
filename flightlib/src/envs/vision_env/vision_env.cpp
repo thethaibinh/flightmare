@@ -140,7 +140,7 @@ bool VisionEnv::getObs(Ref<Vector<>> obs) {
 }
 
 bool VisionEnv::getObstacleState(Ref<Vector<>> obs_state) {
-  if (dynamic_objects_.size() <= 0 || static_objects_.size() <= 0) {
+  if (dynamic_objects_.size() < 0 || static_objects_.size() <= 0) {
     logger_.error("No dynamic or static obstacles.");
     return false;
   }
