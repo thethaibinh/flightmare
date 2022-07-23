@@ -4,7 +4,7 @@ scene_0:
 
 scene_1:
   name: "street"
-  render_offset: [-9.38, -12.66, 0.1]
+  render_offset: [0, 0, 0]
 
 scene_2:
   name: "forest"
