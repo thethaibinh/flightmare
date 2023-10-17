@@ -3,12 +3,12 @@ scene_0:
   render_offset: [0, 0, 0]
 
 scene_1:
-  name: "street"
+  name: "industrial"
   render_offset: [0, 0, 0]
 
 scene_2:
   name: "forest"
-  render_offset: [21, 217, 94]
+  render_offset: [98.0, 18.0, 0.05]
 
 scene_3:
   name: "wasteland"
