@@ -8,7 +8,7 @@ scene_1:
 
 scene_2:
   name: "forest"
-  render_offset: [78, 66.5, 114.48]
+  render_offset: [78, 66, 115]
 
 scene_3:
   name: "wasteland"
