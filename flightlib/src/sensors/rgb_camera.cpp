@@ -83,8 +83,8 @@ bool RGBCamera::setHeight(const int height) {
 }
 
 bool RGBCamera::updateCameraIntrinsics(void) {
-  K_(0, 0) = (height_ / 2) / (std::tanh(M_PI * fov_ / 180));
-  K_(1, 1) = (height_ / 2) / (std::tanh(M_PI * fov_ / 180));
+  K_(0, 0) = (height_ / 2) / std::tan(M_PI * fov_ / 180.0 / 2.0);
+  K_(1, 1) = K_(0, 0);
   K_(0, 2) = (int)width_ / 2;
   K_(1, 2) = (int)height_ / 2;
   K_(2, 2) = 1;
