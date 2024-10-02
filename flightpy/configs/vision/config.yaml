@@ -24,9 +24,9 @@ rgb_camera:
   t_BC: [0.0, 0.0, 0.3] # translational vector of the camera with repect to the body frame
   r_BC: [0.0, 0.0, -90] # rotational angle (roll, pitch, yaw) of the camera in degree.
   channels: 3
-  width: 320
-  height: 240
-  fov: 90.0
+  width: 480
+  height: 270
+  fov: 58.0
   enable_depth: yes
   enable_segmentation: no
   enable_opticalflow: no
