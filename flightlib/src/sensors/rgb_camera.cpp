@@ -220,8 +220,14 @@ bool RGBCamera::getRGBImage(cv::Mat& rgb_img) {
 
 bool RGBCamera::getDepthMap(cv::Mat& depth_map) {
   if (!depth_queue_.empty()) {
-    depth_map = depth_queue_.front();
+    cv::Mat ground_truth_depth = depth_queue_.front() * 100.0;
     depth_queue_.pop_front();
+
+    if (depth_noise_fused_) {
+      depth_map = fuseDepthWithUncertainty(ground_truth_depth);
+    } else {
+      depth_map = ground_truth_depth;
+    }
     return true;
   }
   return false;
@@ -243,6 +249,72 @@ bool RGBCamera::getOpticalFlow(cv::Mat& opticalflow) {
     return true;
   }
   return false;
+}
+
+void RGBCamera::setDepthUncertaintyCoeffs(const std::vector<Scalar>& coeffs) {
+  cov_coeffs_ = coeffs;
+}
+
+cv::Mat RGBCamera::fuseDepthWithUncertainty(const cv::Mat& depth_map) const {
+  if (!depth_noise_fused_) {
+    return depth_map;
+  }
+
+  cv::Mat fused_depth = depth_map.clone();
+  std::random_device rd;
+  std::mt19937 gen(rd());
+
+  for (uint16_t y = 0; y < fused_depth.rows; ++y) {
+    for (uint16_t x = 0; x < fused_depth.cols; ++x) {
+      float z = fused_depth.at<float>(y, x);
+      if (z < 1 || z > 10) continue;
+
+      Eigen::Vector3d point_3d((x - K_(0, 2)) * z / K_(0, 0),
+                               (y - K_(1, 2)) * z / K_(1, 1),
+                               z);
+
+      Eigen::Vector3d cov_diag = getCovariance(point_3d);
+
+      // Generate random noise
+      std::normal_distribution<> dist_x(0, std::sqrt(cov_diag.x()));
+      std::normal_distribution<> dist_y(0, std::sqrt(cov_diag.y()));
+      std::normal_distribution<> dist_z(0, std::sqrt(cov_diag.z()));
+
+      // Add noise to the 3D point
+      float fused_z = point_3d.z() + dist_z(gen);
+      // Project back to depth frame
+      float fused_x = point_3d.x() + dist_x(gen);
+      float fused_y = point_3d.y() + dist_y(gen);
+
+      // Check if the projected point is within the image bounds
+      uint16_t projected_fused_x = static_cast<uint16_t>(fused_x * K_(0, 0) / fused_z + K_(0, 2));
+      uint16_t projected_fused_y = static_cast<uint16_t>(fused_y * K_(1, 1) / fused_z + K_(1, 2));
+      if (projected_fused_x < fused_depth.cols && projected_fused_y < fused_depth.rows) {
+        // Clip to valid range and convert to 16-bit
+        fused_depth.at<float>(projected_fused_y, projected_fused_x) = fused_z;
+      }
+    }
+  }
+  return fused_depth;
+}
+
+Eigen::Vector3d RGBCamera::getCovariance(const Eigen::Vector3d& depth_point) const {
+  double ca0 = cov_coeffs_[0];
+  double ca1 = cov_coeffs_[1];
+  double ca2 = cov_coeffs_[2];
+  double cl0 = cov_coeffs_[3];
+  double cl1 = cov_coeffs_[4];
+  double cl2 = cov_coeffs_[5];
+
+  double z = depth_point.z();
+  double z_2 = z * z;
+
+  Eigen::Vector3d cov;
+  cov.x() = ca0 + ca1 * z + ca2 * z_2;
+  cov.y() = ca0 + ca1 * z + ca2 * z_2;
+  cov.z() = cl0 + cl1 * z + cl2 * z_2;
+
+  return cov;
 }
 
 }  // namespace flightlib

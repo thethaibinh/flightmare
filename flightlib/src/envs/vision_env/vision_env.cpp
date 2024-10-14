@@ -609,7 +609,7 @@ bool VisionEnv::configCamera(const YAML::Node &cfg) {
   post_processing[1] = cfg["rgb_camera"]["enable_segmentation"].as<bool>();
   post_processing[2] = cfg["rgb_camera"]["enable_opticalflow"].as<bool>();
 
-  //
+  // set camera parameters
   rgb_camera_->setFOV(cfg["rgb_camera"]["fov"].as<Scalar>());
   rgb_camera_->setWidth(cfg["rgb_camera"]["width"].as<int>());
   rgb_camera_->setChannels(cfg["rgb_camera"]["channels"].as<int>());
@@ -617,6 +617,16 @@ bool VisionEnv::configCamera(const YAML::Node &cfg) {
   rgb_camera_->setRelPose(t_BC, r_BC);
   rgb_camera_->setPostProcessing(post_processing);
 
+  if (cfg["rgb_camera"]["depth_uncertainty"]) {
+    std::vector<Scalar> depth_uncertainty_coeffs;
+    depth_uncertainty_coeffs.push_back(cfg["rgb_camera"]["depth_uncertainty"]["ca0"].as<Scalar>());
+    depth_uncertainty_coeffs.push_back(cfg["rgb_camera"]["depth_uncertainty"]["ca1"].as<Scalar>());
+    depth_uncertainty_coeffs.push_back(cfg["rgb_camera"]["depth_uncertainty"]["ca2"].as<Scalar>());
+    depth_uncertainty_coeffs.push_back(cfg["rgb_camera"]["depth_uncertainty"]["cl0"].as<Scalar>());
+    depth_uncertainty_coeffs.push_back(cfg["rgb_camera"]["depth_uncertainty"]["cl1"].as<Scalar>());
+    depth_uncertainty_coeffs.push_back(cfg["rgb_camera"]["depth_uncertainty"]["cl2"].as<Scalar>());
+    rgb_camera_->setDepthUncertaintyCoeffs(depth_uncertainty_coeffs);
+  }
 
   // add camera to the quadrotor
   quad_ptr_->addRGBCamera(rgb_camera_);
@@ -627,6 +637,10 @@ bool VisionEnv::configCamera(const YAML::Node &cfg) {
   rgb_img_ = cv::Mat::zeros(img_height_, img_width_,
                             CV_MAKETYPE(CV_8U, rgb_camera_->getChannels()));
   depth_img_ = cv::Mat::zeros(img_height_, img_width_, CV_32FC1);
+
+  bool depth_noise_fused = cfg["rgb_camera"]["depth_noise_fused"].as<bool>();
+  rgb_camera_->setDepthNoiseFused(depth_noise_fused);
+
   return true;
 }
 

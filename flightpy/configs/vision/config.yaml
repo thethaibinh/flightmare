@@ -30,6 +30,14 @@ rgb_camera:
   enable_depth: yes
   enable_segmentation: no
   enable_opticalflow: no
+  depth_uncertainty:
+    ca0: 0.1
+    ca1: 0.005
+    ca2: 0.005
+    cl0: 0.0001
+    cl1: 0.0001
+    cl2: 0.0001
+  depth_noise_fused: yes
 
 unity:
   scene_id: 0 # 0 warehouse, 1 industrial, 2 forest, 3 wasteland
