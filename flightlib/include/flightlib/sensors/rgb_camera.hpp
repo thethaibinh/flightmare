@@ -2,6 +2,7 @@
 
 #include <yaml-cpp/yaml.h>
 
+#include <random>
 #include <deque>
 #include <functional>
 #include <memory>
@@ -58,9 +59,21 @@ class RGBCamera : SensorBase {
   void enableOpticalFlow(const bool on);
   void enableSegmentation(const bool on);
 
+  void setDepthUncertaintyCoeffs(const std::vector<Scalar>& coeffs);
+  Eigen::Vector3d getCovariance(const Eigen::Vector3d& depth_point) const;
+
+  bool depth_noise_fused_{true};
+
+  void setDepthNoiseFused(bool fused) {
+    depth_noise_fused_ = fused;
+  }
+
  private:
   bool updateCameraIntrinsics(void);
   Logger logger_{"RBGCamera"};
+
+  // Fuse depth image with uncertainty
+  cv::Mat fuseDepthWithUncertainty(const cv::Mat& depth_map) const;
 
   // camera parameters
   int channels_;
@@ -87,6 +100,8 @@ class RGBCamera : SensorBase {
 
   // [depth, segmentation, optical flow]
   std::vector<bool> enabled_layers_;
+
+  std::vector<Scalar> cov_coeffs_;
 };
 
 }  // namespace flightlib
