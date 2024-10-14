@@ -41,7 +41,6 @@ rgb_camera:
     cl1: 0.0001
     cl2: 0.0001
   depth_noise_fused: yes
-  depth_topic: "/kingfisher/dodgeros_pilot/unity/depth"
 
 unity:
   scene_id: 0 # 0 warehouse, 1 industrial, 2 forest, 3 wasteland
@@ -70,3 +69,8 @@ quadrotor_dynamics:
   body_drag_1: [0.00, 0.00, 0.00]
   body_drag_3: [0.00, 0.00, 0.00]
   body_drag_h: 0.00
+
+topics:
+  depth: "/kingfisher/dodgeros_pilot/unity/depth"
+  control_command: "/kingfisher/dodgeros_pilot/feedthrough_command"
+  odometry: "/delta/odometry_sensor1/odometry"
