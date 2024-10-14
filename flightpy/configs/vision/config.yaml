@@ -41,6 +41,7 @@ rgb_camera:
     cl1: 0.0001
     cl2: 0.0001
   depth_noise_fused: yes
+  depth_topic: "/kingfisher/dodgeros_pilot/unity/depth"
 
 unity:
   scene_id: 2 # 0 warehouse, 1 industrial, 2 forest, 3 wasteland
