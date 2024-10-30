@@ -5,8 +5,8 @@ environment:
   goal_vel: [3.0, 0.0, 0.0] # goal velicty for tracking vx, vy, vz
   max_detection_range: 10.0 # max obstacle detection range [m], obstacles outside this range will not be detected. The number of obstacles detected is fixed to 10, if less than 10 obstacles are within detectable range, the observation is padded with 10.0
   world_frame_name: "world"
-  vehicle_frame_name: "vehicle"
-  camera_frame_name: "camera"
+  vehicle_frame_name: "delta"
+  camera_frame_name: "camera_depth_optical_center_link"
 
 rewards:
   vel_coeff: -0.01
@@ -27,9 +27,10 @@ rgb_camera:
   t_BC: [0.0, 0.0, 0.3] # translational vector of the camera with repect to the body frame
   r_BC: [0.0, 0.0, -90] # rotational angle (roll, pitch, yaw) of the camera in degree.
   channels: 3
-  width: 320
-  height: 240
-  fov: 90.0
+  width: 480
+  height: 270
+  horizontal_fov: 87.0
+  vertical_fov: 58.0
   enable_depth: yes
   enable_segmentation: no
   enable_opticalflow: no
@@ -40,10 +41,10 @@ rgb_camera:
     cl0: 0.0001
     cl1: 0.0001
     cl2: 0.0001
-  depth_noise_fused: yes
+  depth_noise_fused: no
 
 unity:
-  scene_id: 2 # 0 warehouse, 1 industrial, 2 forest, 3 wasteland
+  scene_id: 0 # 0 warehouse, 1 industrial, 2 forest, 3 wasteland
   render: no
 
 simulation:
@@ -71,6 +72,10 @@ quadrotor_dynamics:
   body_drag_h: 0.00
 
 topics:
-  depth: "/kingfisher/dodgeros_pilot/unity/depth"
-  control_command: "/kingfisher/dodgeros_pilot/feedthrough_command"
+  # depth: "/kingfisher/dodgeros_pilot/unity/depth"
+  depth: "/delta/rgbd/camera_depth/depth"
+  dodgedrone_command: "/kingfisher/dodgeros_pilot/feedthrough_command"
+  rotors_command: "control_command"
+  motor_speed: "/delta/command/motor_speed"
+  motor_speed_feedback: "/delta/gazebo/command/motor_speed"
   odometry: "/delta/odometry_sensor1/odometry"
