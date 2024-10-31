@@ -8,7 +8,8 @@ scene_1:
 
 scene_2:
   name: "forest"
-  render_offset: [78, 66, 115]
+  render_offset: [118, 201, 99]
+  # render_offset: [148, 201, 104] generate point cloud
 
 scene_3:
   name: "wasteland"

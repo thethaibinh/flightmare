@@ -40,7 +40,7 @@ rgb_camera:
     cl0: 0.0001
     cl1: 0.0001
     cl2: 0.0001
-  depth_noise_fused: yes
+  depth_noise_fused: no
 
 unity:
   scene_id: 2 # 0 warehouse, 1 industrial, 2 forest, 3 wasteland
