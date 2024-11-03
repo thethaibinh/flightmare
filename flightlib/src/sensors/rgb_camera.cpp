@@ -310,9 +310,9 @@ Eigen::Vector3d RGBCamera::getCovariance(const Eigen::Vector3d& depth_point) con
   double z_2 = z * z;
 
   Eigen::Vector3d cov;
-  cov.x() = ca0 + ca1 * z + ca2 * z_2;
-  cov.y() = ca0 + ca1 * z + ca2 * z_2;
-  cov.z() = cl0 + cl1 * z + cl2 * z_2;
+  cov.x() = cl0 + cl1 * z + cl2 * depth_point.x();
+  cov.y() = cl0 + cl1 * z + cl2 * depth_point.y();
+  cov.z() = ca0 + ca1 * z + ca2 * z_2;
 
   return cov;
 }
