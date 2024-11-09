@@ -439,20 +439,20 @@ bool VisionEnv::loadParam(const YAML::Node &cfg) {
     return false;
   }
 
-  if (cfg["rewards"]) {
-    // load reward coefficients for reinforcement learning
-    vel_coeff_ = cfg["rewards"]["vel_coeff"].as<Scalar>();
-    collision_coeff_ = cfg["rewards"]["collision_coeff"].as<Scalar>();
-    angular_vel_coeff_ = cfg["rewards"]["angular_vel_coeff"].as<Scalar>();
-    survive_rew_ = cfg["rewards"]["survive_rew"].as<Scalar>();
+  // if (cfg["rewards"]) {
+  //   // load reward coefficients for reinforcement learning
+  //   vel_coeff_ = cfg["rewards"]["vel_coeff"].as<Scalar>();
+  //   collision_coeff_ = cfg["rewards"]["collision_coeff"].as<Scalar>();
+  //   angular_vel_coeff_ = cfg["rewards"]["angular_vel_coeff"].as<Scalar>();
+  //   survive_rew_ = cfg["rewards"]["survive_rew"].as<Scalar>();
 
-    // load reward settings
-    reward_names_ = cfg["rewards"]["names"].as<std::vector<std::string>>();
-    rew_dim_ = reward_names_.size();
-  } else {
-    logger_.error("Cannot load [rewards] parameters");
-    return false;
-  }
+  //   // load reward settings
+  //   reward_names_ = cfg["rewards"]["names"].as<std::vector<std::string>>();
+  //   rew_dim_ = reward_names_.size();
+  // } else {
+  //   logger_.error("Cannot load [rewards] parameters");
+  //   return false;
+  // }
 
   // environment
   if (cfg["unity"]) {
