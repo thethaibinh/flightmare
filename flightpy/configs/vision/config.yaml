@@ -4,9 +4,6 @@ environment:
   world_box: [-20, 80, -10, 10, 0.0, 10] # Bounding box applied during training, exiting this box terminates the episode. [xmin, xmax, ymin, ymax, zmin, zmax]
   goal_vel: [3.0, 0.0, 0.0] # goal velicty for tracking vx, vy, vz
   max_detection_range: 10.0 # max obstacle detection range [m], obstacles outside this range will not be detected. The number of obstacles detected is fixed to 10, if less than 10 obstacles are within detectable range, the observation is padded with 10.0
-  world_frame_name: "world"
-  vehicle_frame_name: "vehicle"
-  camera_frame_name: "camera"
 
 rgb_camera:
   on: yes
@@ -55,24 +52,3 @@ quadrotor_dynamics:
   body_drag_1: [0.00, 0.00, 0.00]
   body_drag_3: [0.00, 0.00, 0.00]
   body_drag_h: 0.00
-
-topics:
-  # Flightmare topics
-  depth: "/kingfisher/dodgeros_pilot/unity/depth"
-  control_command: "/kingfisher/dodgeros_pilot/feedthrough_command"
-  odometry: "/delta/odometry_sensor1/odometry"
-  # Ardupilot topics
-  # depth: "/d435/depth/image_rect_raw"
-  # mavros_state: "/mavros/state"
-  # mavros_odometry: "/mavros/odometry/in"
-
-planning:
-  runtime_mode: "flightmare" # "flightmare" or "mavros"
-  go_to_goal_threshold: 3.0 # distance to goal for switching control
-  # go_to_goal_threshold: 0.3 # distance to goal for switching control
-  goal_coordinate:
-    north: 6.0
-    west: 0.0
-    up: 1.0
-  checking_time_ratio: 0.4
-  depth_sampling_margin: 0.3
