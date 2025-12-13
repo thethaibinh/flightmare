@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.8)
+cmake_policy(SET CMP0057 NEW)
 
 project(flightlib VERSION 0.1.0)
 
@@ -194,7 +195,62 @@ file(GLOB_RECURSE FLIGHTLIB_UNITY_BRIDGE_TEST_SOURCES
 # Optional Catkin Build
 ################################################################################
 
-if(DEFINED CATKIN_DEVEL_PREFIX)
+find_package(ament_cmake QUIET)
+
+if(ament_cmake_FOUND)
+  message(STATUS "======>  Building with -- ament_cmake (ROS 2) -- ")
+  add_definitions(-DEIGEN_DONT_PARALLELIZE -DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
+  
+  # Find zmqpp from ROS 2 vendor package
+  find_package(zmqpp_vendor REQUIRED)
+  # Get zmqpp library path from vendor
+  set(ZMQPP_LIBRARY "/opt/ros/humble/lib/libzmqpp.so")
+  set(ZMQPP_INCLUDE_DIR "/opt/ros/humble/include")
+  include_directories(${ZMQPP_INCLUDE_DIR})
+  
+  # Library and Executables
+  include_directories(include)
+  
+  if(NOT FLIGHTLIB_SOURCES)
+    set(LIBRARY_NAME)
+  else()
+    # flightlib
+    add_library(${PROJECT_NAME} ${FLIGHTLIB_SOURCES})
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+      ${OpenCV_LIBRARIES}
+      yaml-cpp
+      zmq
+      ${ZMQPP_LIBRARY})
+    set(LIBRARY_NAME ${PROJECT_NAME})
+    set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+    target_include_directories(${PROJECT_NAME} PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+      $<BUILD_INTERFACE:${EIGEN3_INCLUDE_DIR}>
+      $<INSTALL_INTERFACE:include>
+    )
+  endif()
+  
+  # Install headers
+  install(DIRECTORY include/
+    DESTINATION include
+  )
+  
+  # Install library
+  install(TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}Targets
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+  )
+  
+  # Export targets
+  ament_export_targets(${PROJECT_NAME}Targets HAS_LIBRARY_TARGET)
+  ament_export_include_directories(include)
+  ament_export_libraries(${PROJECT_NAME})
+  
+  ament_package()
+  return()
+elseif(DEFINED CATKIN_DEVEL_PREFIX)
   message(STATUS "======>  Building with -- catkin -- ")
   add_definitions(-DEIGEN_DONT_PARALLELIZE -DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
   include(cmake/catkin.cmake)
@@ -225,7 +281,7 @@ else()
     ${OpenCV_LIBRARIES}
     yaml-cpp
     zmq
-    zmqpp)
+    ${ZMQPP_LIBRARY})
   set(LIBRARY_NAME ${PROJECT_NAME})
   set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
 endif()
